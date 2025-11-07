@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unity AI Generator - 智能游戏项目生成器</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-gamepad"></i>
+                <h1>Unity AI Generator</h1>
+            </div>
+            <p class="subtitle">基于阿里通义大模型的智能游戏项目生成系统</p>
+        </header>
+
+        <!-- 主要内容 -->
+        <main class="main-content">
+            <!-- 生成表单 -->
+            <section class="generation-form">
+                <div class="form-card">
+                    <h2><i class="fas fa-magic"></i> 创建你的游戏项目</h2>
+                    
+                    <form id="gameForm">
+                        <div class="form-group">
+                            <label for="gameDescription">
+                                <i class="fas fa-pencil-alt"></i> 游戏描述 *
+                            </label>
+                            <textarea 
+                                id="gameDescription" 
+                                name="description"
+                                placeholder="详细描述你想要的游戏类型、玩法、角色等... 
+例如：创建一个2D平台跳跃游戏，玩家控制一个宇航员角色，可以跳跃躲避障碍物，收集能量晶体，击败外星敌人，最终到达太空船完成关卡。"
+                                required
+                                minlength="10"
+                            ></textarea>
+                            <div class="char-count">
+                                <span id="charCount">0</span> / 最少10个字符
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="gameType">
+                                    <i class="fas fa-list"></i> 游戏类型 *
+                                </label>
+                                <select id="gameType" name="game_type" required>
+                                    <option value="">选择游戏类型...</option>
+                                    <option value="2d_platformer">2D平台跳跃</option>
+                                    <option value="shooter">射击游戏</option>
+                                    <option value="rpg">角色扮演(RPG)</option>
+                                    <option value="puzzle">解谜游戏</option>
+                                    <option value="adventure">冒险游戏</option>
+                                    <option value="racing">竞速游戏</option>
+                                    <option value="strategy">策略游戏</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="complexity">
+                                    <i class="fas fa-layer-group"></i> 复杂度
+                                </label>
+                                <select id="complexity" name="complexity">
+                                    <option value="simple">简单</option>
+                                    <option value="medium" selected>中等</option>
+                                    <option value="complex">复杂</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="assetStyle">
+                                    <i class="fas fa-palette"></i> 资源风格
+                                </label>
+                                <select id="assetStyle" name="asset_style">
+                                    <option value="pixel_art" selected>像素艺术</option>
+                                    <option value="cartoon">卡通风格</option>
+                                    <option value="realistic">写实风格</option>
+                                    <option value="low_poly">低多边形</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group checkbox-group">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" name="include_assets" checked>
+                                    <span class="checkmark"></span>
+                                    <i class="fas fa-image"></i> 包含AI生成资源
+                                </label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="generate-btn" id="generateBtn">
+                            <i class="fas fa-bolt"></i>
+                            <span class="btn-text">生成Unity项目</span>
+                            <div class="loading-spinner" id="loadingSpinner"></div>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- 结果展示 -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-card">
+                    <h2><i class="fas fa-rocket"></i> 生成结果</h2>
+                    
+                    <div class="results-content">
+                        <div class="success-message" id="successMessage">
+                            <i class="fas fa-check-circle"></i>
+                            <span>项目生成成功！</span>
+                        </div>
+                        
+                        <div class="project-info">
+                            <div class="info-item">
+                                <label>项目文件:</label>
+                                <span id="projectName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>生成时间:</label>
+                                <span id="generateTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>文件大小:</label>
+                                <span id="fileSize">-</span>
+                            </div>
+                        </div>
+
+                        <div class="download-section">
+                            <a href="#" class="download-btn" id="downloadBtn" download>
+                                <i class="fas fa-download"></i>
+                                下载项目ZIP包
+                            </a>
+                            <div class="download-info">
+                                <p>包含完整的Unity项目结构、C#脚本和生成的资源文件</p>
+                            </div>
+                        </div>
+
+                        <div class="actions">
+                            <button class="action-btn secondary" id="newProjectBtn">
+                                <i class="fas fa-plus"></i> 创建新项目
+                            </button>
+                            <button class="action-btn" id="viewDetailsBtn">
+                                <i class="fas fa-code"></i> 查看项目详情
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 项目详情模态框 -->
+            <div class="modal" id="detailsModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3><i class="fas fa-code"></i> 项目结构详情</h3>
+                        <button class="close-btn" id="closeModal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <pre id="projectStructure">项目结构加载中...</pre>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部 -->
+        <footer class="footer">
+            <p>Powered by 阿里云通义大模型 | Unity AI Generator v1.0</p>
+        </footer>
+    </div>
+
+    <!-- 加载动画 -->
+    <div class="overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="ai-loader">
+                <i class="fas fa-robot"></i>
+            </div>
+            <h3>AI正在生成你的游戏项目...</h3>
+            <p>这可能需要几分钟时间，请耐心等待</p>
+            <div class="progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="loading-steps">
+                <div class="step active">
+                    <i class="fas fa-check"></i>
+                    <span>解析游戏需求</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-code"></i>
+                    <span>生成项目代码</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-palette"></i>
+                    <span>创建游戏资源</span>
+                </div>
+                <div class="step">
+                    <i class="fas fa-archive"></i>
+                    <span>打包项目文件</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

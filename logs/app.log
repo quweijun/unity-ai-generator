@@ -1,0 +1,56 @@
+2025-11-07 07:09:56,286 - app.main - INFO - 📁 创建目录: temp_projects
+2025-11-07 07:09:56,287 - app.main - INFO - 📁 创建目录: logs
+2025-11-07 07:09:56,287 - app.main - INFO - 📁 创建目录: temp
+2025-11-07 07:09:56,288 - app.main - INFO - 🚀 Unity AI Generator 服务启动中...
+2025-11-07 07:09:56,288 - app.main - INFO - 📁 工作目录: /content/unity-ai-generator
+2025-11-07 07:09:56,288 - app.main - INFO - 🔑 API密钥状态: 已设置
+2025-11-07 07:09:59,296 - app.main - INFO - 🛑 Unity AI Generator 服务关闭
+2025-11-07 07:10:00,095 - app.main - INFO - 📁 创建目录: temp_projects
+2025-11-07 07:10:00,095 - app.main - INFO - 📁 创建目录: logs
+2025-11-07 07:10:00,095 - app.main - INFO - 📁 创建目录: temp
+2025-11-07 07:10:00,096 - app.main - INFO - 🚀 Unity AI Generator 服务启动中...
+2025-11-07 07:10:00,096 - app.main - INFO - 📁 工作目录: /content/unity-ai-generator
+2025-11-07 07:10:00,096 - app.main - INFO - 🔑 API密钥状态: 已设置
+2025-11-07 07:10:02,303 - app.main - INFO - 🛑 Unity AI Generator 服务关闭
+2025-11-07 07:10:03,166 - app.main - INFO - 📁 创建目录: temp_projects
+2025-11-07 07:10:03,167 - app.main - INFO - 📁 创建目录: logs
+2025-11-07 07:10:03,167 - app.main - INFO - 📁 创建目录: temp
+2025-11-07 07:10:03,168 - app.main - INFO - 🚀 Unity AI Generator 服务启动中...
+2025-11-07 07:10:03,169 - app.main - INFO - 📁 工作目录: /content/unity-ai-generator
+2025-11-07 07:10:03,169 - app.main - INFO - 🔑 API密钥状态: 已设置
+2025-11-07 07:10:20,113 - app.main - INFO - 🛑 Unity AI Generator 服务关闭
+2025-11-07 07:11:31,309 - app.main - INFO - 📁 创建目录: temp_projects
+2025-11-07 07:11:31,309 - app.main - INFO - 📁 创建目录: logs
+2025-11-07 07:11:31,309 - app.main - INFO - 📁 创建目录: temp
+2025-11-07 07:11:31,310 - app.main - INFO - 🚀 Unity AI Generator 服务启动中...
+2025-11-07 07:11:31,310 - app.main - INFO - 📁 工作目录: /content/unity-ai-generator
+2025-11-07 07:11:31,310 - app.main - INFO - 🔑 API密钥状态: 已设置
+2025-11-07 07:11:46,264 - app.main - INFO - 📥 收到请求: POST http://localhost:8000/api/v1/generate-unity-project
+2025-11-07 07:11:46,264 - app.main - INFO - 📋 客户端: 127.0.0.1:50238
+2025-11-07 07:11:46,264 - app.main - INFO - 📦 请求体 (前500字符): {
+    "description": "创建一个2D平台跳跃游戏，玩家控制角色跳跃收集金币",
+    "game_type": "2d_platformer",
+    "complexity": "simple"
+  }&{ \
+    "description": "创建一个2D平台跳跃游戏，玩家控制角色跳跃收集金币",\
+    "game_type": "2d_platformer",\
+    "complexity": "simple"\
+  }...
+2025-11-07 07:11:46,265 - app.main - ERROR - ❌ 请求验证失败: [{'type': 'json_invalid', 'loc': ('body', 114), 'msg': 'JSON decode error', 'input': {}, 'ctx': {'error': 'Extra data'}}]
+2025-11-07 07:11:46,265 - app.main - ERROR - 📦 请求体: b'{\n    "description": "\xe5\x88\x9b\xe5\xbb\xba\xe4\xb8\x80\xe4\xb8\xaa2D\xe5\xb9\xb3\xe5\x8f\xb0\xe8\xb7\xb3\xe8\xb7\x83\xe6\xb8\xb8\xe6\x88\x8f\xef\xbc\x8c\xe7\x8e\xa9\xe5\xae\xb6\xe6\x8e\xa7\xe5\x88\xb6\xe8\xa7\x92\xe8\x89\xb2\xe8\xb7\xb3\xe8\xb7\x83\xe6\x94\xb6\xe9\x9b\x86\xe9\x87\x91\xe5\xb8\x81",\n    "game_type": "2d_platformer",\n    "complexity": "simple"\n  }&{ \\\n    "description": "\xe5\x88\x9b\xe5\xbb\xba\xe4\xb8\x80\xe4\xb8\xaa2D\xe5\xb9\xb3\xe5\x8f\xb0\xe8\xb7\xb3\xe8\xb7\x83\xe6\xb8\xb8\xe6\x88\x8f\xef\xbc\x8c\xe7\x8e\xa9\xe5\xae\xb6\xe6\x8e\xa7\xe5\x88\xb6\xe8\xa7\x92\xe8\x89\xb2\xe8\xb7\xb3\xe8\xb7\x83\xe6\x94\xb6\xe9\x9b\x86\xe9\x87\x91\xe5\xb8\x81",\\\n    "game_type": "2d_platformer",\\\n    "complexity": "simple"\\\n  }'
+2025-11-07 07:11:46,265 - app.main - INFO - 📤 返回响应: 422 - 处理时间: 0.00s
+2025-11-07 07:11:46,266 - app.main - INFO - 📥 收到请求: POST http://localhost:8000/api/v1/generate-unity-project
+2025-11-07 07:11:46,267 - app.main - INFO - 📋 客户端: 127.0.0.1:50238
+2025-11-07 07:11:46,267 - app.main - INFO - 📦 请求体 (前500字符): {
+    "description": "创建一个2D平台跳跃游戏，玩家控制角色跳跃收集金币",
+    "game_type": "2d_platformer",
+    "complexity": "simple"
+  }&{ \
+    "description": "创建一个2D平台跳跃游戏，玩家控制角色跳跃收集金币",\
+    "game_type": "2d_platformer",\
+    "complexity": "simple"\
+  }...
+2025-11-07 07:11:46,267 - app.main - ERROR - ❌ 请求验证失败: [{'type': 'json_invalid', 'loc': ('body', 114), 'msg': 'JSON decode error', 'input': {}, 'ctx': {'error': 'Extra data'}}]
+2025-11-07 07:11:46,267 - app.main - ERROR - 📦 请求体: b'{\n    "description": "\xe5\x88\x9b\xe5\xbb\xba\xe4\xb8\x80\xe4\xb8\xaa2D\xe5\xb9\xb3\xe5\x8f\xb0\xe8\xb7\xb3\xe8\xb7\x83\xe6\xb8\xb8\xe6\x88\x8f\xef\xbc\x8c\xe7\x8e\xa9\xe5\xae\xb6\xe6\x8e\xa7\xe5\x88\xb6\xe8\xa7\x92\xe8\x89\xb2\xe8\xb7\xb3\xe8\xb7\x83\xe6\x94\xb6\xe9\x9b\x86\xe9\x87\x91\xe5\xb8\x81",\n    "game_type": "2d_platformer",\n    "complexity": "simple"\n  }&{ \\\n    "description": "\xe5\x88\x9b\xe5\xbb\xba\xe4\xb8\x80\xe4\xb8\xaa2D\xe5\xb9\xb3\xe5\x8f\xb0\xe8\xb7\xb3\xe8\xb7\x83\xe6\xb8\xb8\xe6\x88\x8f\xef\xbc\x8c\xe7\x8e\xa9\xe5\xae\xb6\xe6\x8e\xa7\xe5\x88\xb6\xe8\xa7\x92\xe8\x89\xb2\xe8\xb7\xb3\xe8\xb7\x83\xe6\x94\xb6\xe9\x9b\x86\xe9\x87\x91\xe5\xb8\x81",\\\n    "game_type": "2d_platformer",\\\n    "complexity": "simple"\\\n  }'
+2025-11-07 07:11:46,268 - app.main - INFO - 📤 返回响应: 422 - 处理时间: 0.00s
+2025-11-07 07:14:08,005 - app.main - INFO - 🛑 Unity AI Generator 服务关闭

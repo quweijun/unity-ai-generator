@@ -1,0 +1,13 @@
+{
+  "description": "创建一个2D平台跳跃游戏，玩家控制一个角色可以跳跃躲避障碍物，收集金币，到达终点。",
+  "game_type": "2d_platformer", 
+  "complexity": "simple",
+  "include_assets": true,
+  "asset_style": "pixel_art"
+}
+
+{
+  "status": "success",
+  "message": "项目生成完成",
+  "download_url": "/download-project/UnityProject_20231201_143022.zip"
+}

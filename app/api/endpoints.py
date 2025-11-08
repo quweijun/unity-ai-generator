@@ -581,6 +581,7 @@ async def generate_unity_project(request: dict, background_tasks: BackgroundTask
     try:
         print(f"收到生成请求: {request}")
         
+        print("验证必要字段")
         # 验证必要字段
         if not request.get("description") or not request.get("game_type"):
             raise HTTPException(
@@ -588,12 +589,15 @@ async def generate_unity_project(request: dict, background_tasks: BackgroundTask
                 detail="缺少必要字段: description 和 game_type"
             )
         
+        print("生成项目")        
         # 生成项目
         zip_path = await project_builder.create_unity_project(request)
         
+        print("获取文件名")
         # 获取文件名
         filename = os.path.basename(zip_path)
         
+        print("设置后台清理任务")
         # 设置后台清理任务
         background_tasks.add_task(cleanup_temp_files, zip_path)
         

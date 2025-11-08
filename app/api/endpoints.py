@@ -615,20 +615,74 @@ async def generate_unity_project(request: dict, background_tasks: BackgroundTask
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"项目生成失败: {str(e)}")
 
+# @router.get("/download-project/{filename}")
+# async def download_project(filename: str):
+#     """下载项目zip包"""
+#     file_path = os.path.join("temp_projects", filename)
+    
+#     if not os.path.exists(file_path):
+#         raise HTTPException(status_code=404, detail="文件不存在或已过期")
+    
+#     # 返回文件下载
+#     return FileResponse(
+#         file_path,
+#         filename=f"UnityProject_{datetime.now().strftime('%Y%m%d_%H%M')}.zip",
+#         media_type='application/zip'
+#     )
 @router.get("/download-project/{filename}")
 async def download_project(filename: str):
     """下载项目zip包"""
-    file_path = os.path.join("temp_projects", filename)
-    
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="文件不存在或已过期")
-    
-    # 返回文件下载
-    return FileResponse(
-        file_path,
-        filename=f"UnityProject_{datetime.now().strftime('%Y%m%d_%H%M')}.zip",
-        media_type='application/zip'
-    )
+    try:
+        # 安全检查：防止路径遍历攻击
+        if ".." in filename or "/" in filename or "\\" in filename:
+            raise HTTPException(status_code=400, detail="无效的文件名")
+        
+        # 构建完整的文件路径
+        file_path = os.path.join("temp_projects", filename)
+        
+        print(f"🔍 查找文件: {file_path}")  # 调试信息
+        print(f"📁 当前工作目录: {os.getcwd()}")  # 调试信息
+        print(f"📂 目录内容: {os.listdir('temp_projects') if os.path.exists('temp_projects') else '目录不存在'}")  # 调试信息
+        
+        if not os.path.exists(file_path):
+            # 提供更详细的错误信息
+            available_files = []
+            if os.path.exists("temp_projects"):
+                available_files = os.listdir("temp_projects")
+            
+            raise HTTPException(
+                status_code=404, 
+                detail={
+                    "message": "文件不存在或已过期",
+                    "requested_file": filename,
+                    "available_files": available_files,
+                    "search_path": file_path
+                }
+            )
+        
+        # 检查文件大小
+        file_size = os.path.getsize(file_path)
+        print(f"📦 文件大小: {file_size} bytes")
+        
+        if file_size == 0:
+            raise HTTPException(status_code=500, detail="文件为空")
+        
+        # 返回文件下载 - 使用原始文件名
+        return FileResponse(
+            file_path,
+            filename=filename,  # 使用原始文件名，避免重复时间戳
+            media_type='application/zip',
+            headers={
+                "Content-Disposition": f"attachment; filename={filename}",
+                "Access-Control-Expose-Headers": "Content-Disposition"
+            }
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ 下载错误: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"文件下载失败: {str(e)}")
 
 @router.get("/test")
 async def test_endpoint():

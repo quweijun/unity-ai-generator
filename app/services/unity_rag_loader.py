@@ -437,6 +437,39 @@ class UnityRAGLoader:
             'metadata': metadata
         }
       
+    # 添加 _load_packages_info 方法
+    def _load_packages_info(self) -> List[Dict]:
+        """加载包信息"""
+        print("  📦 加载包信息...")
+        packages_file = self.project_path / 'Packages' / 'manifest.json'
+        documents = []
+        
+        if packages_file.exists():
+            try:
+                with open(packages_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                
+                # 解析包信息
+                packages_data = json.loads(content)
+                dependencies = packages_data.get('dependencies', {})
+                
+                doc = self._create_document(
+                    content=content,
+                    file_path=packages_file,
+                    file_type='packages',
+                    additional_metadata={
+                        'package_count': len(dependencies),
+                        'packages': list(dependencies.keys())[:10]  # 前10个包
+                    }
+                )
+                documents.append(doc)
+                print(f"    ✅ 加载包信息: {len(dependencies)} 个依赖包")
+                
+            except Exception as e:
+                print(f"    ⚠️ 加载包信息失败 {packages_file}: {e}")
+        
+        print(f"  ✅ 加载包信息完成")
+        return documents
     def _load_scene_files(self, base_path: Path) -> List[Dict]:
         """加载场景文件"""
         print("  🎭 加载场景文件...")

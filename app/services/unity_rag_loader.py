@@ -436,3 +436,172 @@ class UnityRAGLoader:
             'content': content,
             'metadata': metadata
         }
+      
+    def _load_scene_files(self, base_path: Path) -> List[Dict]:
+        """加载场景文件"""
+        print("  🎭 加载场景文件...")
+        scene_files = list(base_path.rglob('*.unity'))
+        documents = []
+        
+        for scene_file in scene_files:
+            if self._should_exclude_file(scene_file):
+                continue
+                
+            try:
+                content = self._load_file_content(scene_file)
+                if content and "文件读取失败" not in content and "二进制文件" not in content:
+                    # 分析场景文件
+                    analysis = self._analyze_scene_file(content, scene_file)
+                    
+                    doc = self._create_document(
+                        content=content,
+                        file_path=scene_file,
+                        file_type='scene',
+                        additional_metadata={
+                            'scene_name': analysis.get('scene_name', 'Unknown'),
+                            'game_objects_count': analysis.get('game_objects_count', 0),
+                            'components_count': analysis.get('components_count', 0)
+                        }
+                    )
+                    documents.append(doc)
+                    
+            except Exception as e:
+                print(f"  ⚠️ 加载场景文件失败 {scene_file}: {e}")
+        
+        print(f"  ✅ 加载 {len(documents)} 个场景文件")
+        return documents
+    
+    def _load_prefab_files(self, base_path: Path) -> List[Dict]:
+        """加载预制体文件"""
+        print("  🔧 加载预制体文件...")
+        prefab_files = list(base_path.rglob('*.prefab'))
+        documents = []
+        
+        for prefab_file in prefab_files:
+            if self._should_exclude_file(prefab_file):
+                continue
+                
+            try:
+                content = self._load_file_content(prefab_file)
+                if content and "文件读取失败" not in content and "二进制文件" not in content:
+                    doc = self._create_document(
+                        content=content,
+                        file_path=prefab_file,
+                        file_type='prefab',
+                        additional_metadata={
+                            'prefab_name': prefab_file.stem
+                        }
+                    )
+                    documents.append(doc)
+                    
+            except Exception as e:
+                print(f"  ⚠️ 加载预制体失败 {prefab_file}: {e}")
+        
+        print(f"  ✅ 加载 {len(documents)} 个预制体")
+        return documents
+    
+    def _load_shader_files(self, base_path: Path) -> List[Dict]:
+        """加载Shader文件"""
+        print("  🌈 加载Shader文件...")
+        shader_extensions = ['.shader', '.cginc', '.hlsl']
+        shader_files = []
+        
+        for ext in shader_extensions:
+            shader_files.extend(list(base_path.rglob(f'*{ext}')))
+        
+        documents = []
+        
+        for shader_file in shader_files:
+            if self._should_exclude_file(shader_file):
+                continue
+                
+            try:
+                content = self._load_file_content(shader_file)
+                if content and "文件读取失败" not in content and "二进制文件" not in content:
+                    doc = self._create_document(
+                        content=content,
+                        file_path=shader_file,
+                        file_type='shader',
+                        additional_metadata={
+                            'shader_name': shader_file.stem,
+                            'shader_type': shader_file.suffix[1:]
+                        }
+                    )
+                    documents.append(doc)
+                    
+            except Exception as e:
+                print(f"  ⚠️ 加载Shader失败 {shader_file}: {e}")
+        
+        print(f"  ✅ 加载 {len(documents)} 个Shader文件")
+        return documents
+    
+    def _load_config_files(self, base_path: Path) -> List[Dict]:
+        """加载配置文件"""
+        print("  ⚙️ 加载配置文件...")
+        config_extensions = ['.json', '.xml', '.yml', '.yaml', '.txt']
+        config_files = []
+        
+        for ext in config_extensions:
+            config_files.extend(list(base_path.rglob(f'*{ext}')))
+        
+        documents = []
+        
+        for config_file in config_files:
+            if self._should_exclude_file(config_file):
+                continue
+                
+            try:
+                content = self._load_file_content(config_file)
+                if content and "文件读取失败" not in content and "二进制文件" not in content:
+                    doc = self._create_document(
+                        content=content,
+                        file_path=config_file,
+                        file_type='config'
+                    )
+                    documents.append(doc)
+                    
+            except Exception as e:
+                print(f"  ⚠️ 加载配置文件失败 {config_file}: {e}")
+        
+        print(f"  ✅ 加载 {len(documents)} 个配置文件")
+        return documents
+    
+    def _load_other_assets(self, base_path: Path) -> List[Dict]:
+        """加载其他资源文件"""
+        print("  📦 加载其他资源文件...")
+        documents = []
+        
+        # 加载文档文件
+        doc_files = list(base_path.rglob('*.md'))
+        for doc_file in doc_files:
+            if self._should_exclude_file(doc_file):
+                continue
+            try:
+                content = self._load_file_content(doc_file)
+                if content and "文件读取失败" not in content and "二进制文件" not in content:
+                    doc = self._create_document(content, doc_file, 'document')
+                    documents.append(doc)
+            except Exception as e:
+                print(f"  ⚠️ 加载文档失败 {doc_file}: {e}")
+        
+        return documents
+    
+    def _analyze_scene_file(self, content: str, file_path: Path) -> Dict:
+        """分析Unity场景文件"""
+        # Unity场景文件是YAML格式
+        lines = content.split('\n')
+        game_objects = 0
+        components = 0
+        scene_name = file_path.stem
+        
+        for line in lines:
+            if line.strip().startswith('GameObject:'):
+                game_objects += 1
+            if line.strip().startswith('m_Component:'):
+                components += 1
+        
+        return {
+            'scene_name': scene_name,
+            'game_objects_count': game_objects,
+            'components_count': components
+        }

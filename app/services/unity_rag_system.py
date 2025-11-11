@@ -48,6 +48,7 @@ class UnityRAGSystem:
         # 2. 分割文档
         chunks = self.processor.split_unity_documents(documents)
         
+        print("start process embeddings")
         # 3. 生成嵌入向量
         embeddings = self.processor.generate_embeddings(chunks)
         

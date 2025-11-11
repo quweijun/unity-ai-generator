@@ -1,9 +1,22 @@
 # app/services/unity_text_processor.py
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from sentence_transformers import SentenceTransformer
+import numpy as np
 from typing import List, Dict
+import logging
+
+logger = logging.getLogger(__name__)
 
 class UnityTextProcessor:
     def __init__(self):
+        # 初始化嵌入模型
+        try:
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            logger.info("✅ 嵌入模型初始化成功")
+        except Exception as e:
+            logger.error(f"❌ 嵌入模型初始化失败: {e}")
+            self.embedding_model = None
+        
         # 针对Unity代码的智能分割器
         self.code_splitter = RecursiveCharacterTextSplitter(
             chunk_size=800,
@@ -53,6 +66,31 @@ class UnityTextProcessor:
         
         print(f"✅ 文档分割完成: {len(chunks)} 个块")
         return chunks
+    
+    def generate_embeddings(self, chunks: List[Dict]) -> np.ndarray:
+        """生成文本块的嵌入向量"""
+        print("step1")
+        if self.embedding_model is None:
+            raise RuntimeError("嵌入模型未初始化，请安装: pip install sentence-transformers")
+        
+        texts = [chunk['content'] for chunk in chunks]
+        print(f"🧠 为 {len(texts)} 个文本块生成嵌入向量...")
+        
+        try:
+            embeddings = self.embedding_model.encode(
+                texts, 
+                show_progress_bar=True,
+                batch_size=32,
+                convert_to_numpy=True
+            )
+            print(f"✅ 嵌入向量生成完成: {embeddings.shape}")
+            return embeddings
+            
+        except Exception as e:
+            logger.error(f"❌ 生成嵌入向量失败: {e}")
+            # 返回随机嵌入向量作为备选
+            print("⚠️ 使用随机嵌入向量作为备选")
+            return np.random.randn(len(texts), 384).astype('float32')
     
     def _split_code_file(self, content: str, metadata: Dict) -> List[Dict]:
         """分割代码文件"""

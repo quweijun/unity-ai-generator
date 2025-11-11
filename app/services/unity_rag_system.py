@@ -1,8 +1,31 @@
 # app/services/unity_rag_system.py
-from .unity_rag_loader import UnityRAGLoader
-from .unity_text_processor import UnityTextProcessor
+
+
+from app.services.unity_rag_loader import UnityRAGLoader
+from app.services.unity_text_processor import UnityTextProcessor
 from .vector_store import ChromaVectorStore
 import asyncio
+
+# 添加路径以确保可以找到模块
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+
+try:
+    from .unity_rag_loader import UnityRAGLoader
+    from .unity_text_processor import UnityTextProcessor
+    from .vector_store import ChromaVectorStore
+except ImportError as e:
+    print(f"❌ 导入失败: {e}")
+    # 备选方案：直接导入
+    from unity_rag_loader import UnityRAGLoader
+    from unity_text_processor import UnityTextProcessor
+    from vector_store import ChromaVectorStore
+
+import asyncio
+from typing import List, Dict, Optional
 
 class UnityRAGSystem:
     def __init__(self, unity_project_path: str):
@@ -129,7 +152,7 @@ class UnityRAGSystem:
 
         请提供具体、可操作的Unity开发建议。
         """
-    return prompt
+        return prompt
 
     def _get_code_language(self, file_type: str) -> str:
         """获取代码语言"""
@@ -145,7 +168,7 @@ class UnityRAGSystem:
   
     ### 4. 使用示例
 
-    ```python
+    #```python
     # 使用示例
     async def main():
         # 初始化Unity RAG系统

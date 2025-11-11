@@ -81,38 +81,82 @@ class ChromaVectorStore:
     #         logger.error(f"❌ 添加文档到向量数据库失败: {e}")
     #         raise
     
-    def add_documents(self, chunks: List[Dict], embeddings: np.ndarray):
-        """添加文档到向量数据库"""
-        if not self.collection:
-            self.create_collection()
+    # def add_documents(self, chunks: List[Dict], embeddings: np.ndarray):
+    #     """添加文档到向量数据库"""
+    #     if not self.collection:
+    #         self.create_collection()
         
-        logger.info("💾 保存文档到向量数据库...")
+    #     logger.info("💾 保存文档到向量数据库...")
         
-        documents = []
-        metadatas = []
-        ids = []
+    #     documents = []
+    #     metadatas = []
+    #     ids = []
         
-        for i, chunk in enumerate(chunks):
-            # 限制文档长度，避免过长
-            content = chunk['content']
-            if len(content) > 10000:  # 限制最大长度
-                content = content[:10000] + "\n... [内容截断]"
+    #     for i, chunk in enumerate(chunks):
+    #         # 限制文档长度，避免过长
+    #         content = chunk['content']
+    #         if len(content) > 10000:  # 限制最大长度
+    #             content = content[:10000] + "\n... [内容截断]"
             
-            documents.append(content)
+    #         documents.append(content)
             
-            # 清理metadata，确保只包含基本数据类型
-            metadata = self._clean_metadata(chunk['metadata'])
-            metadatas.append(metadata)
+    #         # 清理metadata，确保只包含基本数据类型
+    #         metadata = self._clean_metadata(chunk['metadata'])
+    #         metadatas.append(metadata)
             
-            # 生成唯一ID
-            file_path = chunk['metadata'].get('file_path', 'unknown')
-            chunk_id = f"chunk_{i}_{hash(file_path) % 10000:04d}"
-            ids.append(chunk_id)
+    #         # 生成唯一ID
+    #         file_path = chunk['metadata'].get('file_path', 'unknown')
+    #         chunk_id = f"chunk_{i}_{hash(file_path) % 10000:04d}"
+    #         ids.append(chunk_id)
         
+    #     try:
+    #         # 转换为列表格式
+    #         embeddings_list = embeddings.tolist()
+            
+    #         self.collection.add(
+    #             embeddings=embeddings_list,
+    #             documents=documents,
+    #             metadatas=metadatas,
+    #             ids=ids
+    #         )
+            
+    #         logger.info(f"🎉 向量数据库更新完成: {len(documents)} 个文档")
+            
+    #     except Exception as e:
+    #         logger.error(f"❌ 添加文档到向量数据库失败: {e}")
+    #         raise
+    def add_documents(self, chunks, embeddings):
+        """添加文档块到向量数据库"""
         try:
-            # 转换为列表格式
-            embeddings_list = embeddings.tolist()
+            # 准备文档数据
+            documents = []
+            metadatas = []
+            ids = []
             
+            for i, chunk in enumerate(chunks):
+                documents.append(chunk.text)
+                
+                # 清理元数据，确保没有 None 值
+                cleaned_metadata = {}
+                if chunk.metadata:
+                    for key, value in chunk.metadata.items():
+                        if value is not None:
+                            # 根据值的类型进行适当转换
+                            if isinstance(value, (str, int, float, bool)):
+                                cleaned_metadata[key] = value
+                            else:
+                                # 将其他类型转换为字符串
+                                cleaned_metadata[key] = str(value)
+                        else:
+                            # 对于 None 值，提供默认值或跳过
+                            cleaned_metadata[key] = ""  # 或者跳过这个字段
+                
+                metadatas.append(cleaned_metadata)
+                ids.append(f"chunk_{i}")
+            
+            # 转换为嵌入向量列表
+            embeddings_list = embeddings.tolist()
+
             self.collection.add(
                 embeddings=embeddings_list,
                 documents=documents,
@@ -120,12 +164,11 @@ class ChromaVectorStore:
                 ids=ids
             )
             
-            logger.info(f"🎉 向量数据库更新完成: {len(documents)} 个文档")
+            logger.info(f"✅ 成功添加 {len(documents)} 个文档到向量数据库")
             
         except Exception as e:
             logger.error(f"❌ 添加文档到向量数据库失败: {e}")
             raise
-
     def _clean_metadata(self, metadata: Dict) -> Dict:
         """清理metadata，确保只包含ChromaDB支持的数据类型"""
         cleaned = {}

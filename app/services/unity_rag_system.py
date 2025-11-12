@@ -5,6 +5,7 @@ from app.services.unity_rag_loader import UnityRAGLoader
 from app.services.unity_text_processor import UnityTextProcessor
 from .vector_store import ChromaVectorStore
 import asyncio
+import traceback
 
 # 添加路径以确保可以找到模块
 import os
@@ -34,7 +35,32 @@ class UnityRAGSystem:
         self.processor = UnityTextProcessor()
         self.vector_store = ChromaVectorStore(persist_directory="./chroma_unity_db")
         self.is_initialized = False
+        self.llm_api_key = ""
     
+    async def _call_llm(self, prompt: str) -> str:
+        """
+        调用语言模型 (LLM) 获取回答。
+        优先使用 OpenAI API，如果失败使用本地模拟回答。
+        """
+        try:
+
+            from openai import OpenAI
+            client = OpenAI(api_key=self.llm_api_key)
+
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0
+            )
+            answer = response.choices[0].message.content
+            return answer
+
+        except ImportError:
+            return f"[模拟回答] 问题: {prompt[:100]}..."
+        except Exception as e:
+            traceback.print_exc()
+            return f"[LLM调用失败] {e}"
+
     async def initialize(self):
         """初始化Unity RAG系统"""
         if self.is_initialized:
@@ -105,7 +131,7 @@ class UnityRAGSystem:
         relevant_docs = self.vector_store.search(
             question, 
             n_results=10,
-            where=where_filter
+            where_filter=where_filter
         )
         
         # 构建提示词
@@ -132,6 +158,7 @@ class UnityRAGSystem:
         """构建Unity专用提示词"""
         
         context_parts = []
+        class_info = ""
         for i, doc in enumerate(relevant_docs):
             metadata = doc['metadata']
             context_parts.append(f"""

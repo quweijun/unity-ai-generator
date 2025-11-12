@@ -39,92 +39,7 @@ class ChromaVectorStore:
             )
             logger.info(f"✅ 创建新集合: {collection_name}")
     
-    # def add_documents(self, chunks: List[Dict], embeddings: np.ndarray):
-    #     """添加文档到向量数据库"""
-    #     if not self.collection:
-    #         self.create_collection()
-        
-    #     logger.info("💾 保存文档到向量数据库...")
-        
-    #     documents = []
-    #     metadatas = []
-    #     ids = []
-        
-    #     for i, chunk in enumerate(chunks):
-    #         # 限制文档长度，避免过长
-    #         content = chunk['content']
-    #         if len(content) > 10000:  # 限制最大长度
-    #             content = content[:10000] + "\n... [内容截断]"
-            
-    #         documents.append(content)
-    #         metadatas.append(chunk['metadata'])
-            
-    #         # 生成唯一ID
-    #         file_path = chunk['metadata'].get('file_path', 'unknown')
-    #         chunk_id = f"chunk_{i}_{hash(file_path) % 10000:04d}"
-    #         ids.append(chunk_id)
-        
-    #     try:
-    #         # 转换为列表格式
-    #         embeddings_list = embeddings.tolist()
-            
-    #         self.collection.add(
-    #             embeddings=embeddings_list,
-    #             documents=documents,
-    #             metadatas=metadatas,
-    #             ids=ids
-    #         )
-            
-    #         logger.info(f"🎉 向量数据库更新完成: {len(documents)} 个文档")
-            
-    #     except Exception as e:
-    #         logger.error(f"❌ 添加文档到向量数据库失败: {e}")
-    #         raise
     
-    # def add_documents(self, chunks: List[Dict], embeddings: np.ndarray):
-    #     """添加文档到向量数据库"""
-    #     if not self.collection:
-    #         self.create_collection()
-        
-    #     logger.info("💾 保存文档到向量数据库...")
-        
-    #     documents = []
-    #     metadatas = []
-    #     ids = []
-        
-    #     for i, chunk in enumerate(chunks):
-    #         # 限制文档长度，避免过长
-    #         content = chunk['content']
-    #         if len(content) > 10000:  # 限制最大长度
-    #             content = content[:10000] + "\n... [内容截断]"
-            
-    #         documents.append(content)
-            
-    #         # 清理metadata，确保只包含基本数据类型
-    #         metadata = self._clean_metadata(chunk['metadata'])
-    #         metadatas.append(metadata)
-            
-    #         # 生成唯一ID
-    #         file_path = chunk['metadata'].get('file_path', 'unknown')
-    #         chunk_id = f"chunk_{i}_{hash(file_path) % 10000:04d}"
-    #         ids.append(chunk_id)
-        
-    #     try:
-    #         # 转换为列表格式
-    #         embeddings_list = embeddings.tolist()
-            
-    #         self.collection.add(
-    #             embeddings=embeddings_list,
-    #             documents=documents,
-    #             metadatas=metadatas,
-    #             ids=ids
-    #         )
-            
-    #         logger.info(f"🎉 向量数据库更新完成: {len(documents)} 个文档")
-            
-    #     except Exception as e:
-    #         logger.error(f"❌ 添加文档到向量数据库失败: {e}")
-    #         raise
     def add_documents(self, chunks, embeddings):
         """添加文档块到向量数据库"""
         try:
@@ -213,35 +128,35 @@ class ChromaVectorStore:
         
         return cleaned
 
-        def search(self, query: str, n_results: int = 5, 
-                  where_filter: Optional[Dict] = None) -> List[Dict]:
-            """搜索相关文档"""
-            if not self.collection:
-                return []
+    def search(self, query: str, n_results: int = 5, 
+              where_filter: Optional[Dict] = None) -> List[Dict]:
+        """搜索相关文档"""
+        if not self.collection:
+            return []
+        
+        try:
+            results = self.collection.query(
+                query_texts=[query],
+                n_results=n_results,
+                where=where_filter
+            )
             
-            try:
-                results = self.collection.query(
-                    query_texts=[query],
-                    n_results=n_results,
-                    where=where_filter
-                )
-                
-                formatted_results = []
-                if results['documents'] and len(results['documents'][0]) > 0:
-                    for i in range(len(results['documents'][0])):
-                        formatted_results.append({
-                            'content': results['documents'][0][i],
-                            'metadata': results['metadatas'][0][i],
-                            'distance': results['distances'][0][i] if results['distances'] else 0,
-                            'score': 1 - (results['distances'][0][i] if results['distances'] else 0)
-                        })
-                
-                logger.info(f"🔍 搜索完成: 查询='{query}', 结果数={len(formatted_results)}")
-                return formatted_results
-                
-            except Exception as e:
-                logger.error(f"❌ 搜索失败: {e}")
-                return []
+            formatted_results = []
+            if results['documents'] and len(results['documents'][0]) > 0:
+                for i in range(len(results['documents'][0])):
+                    formatted_results.append({
+                        'content': results['documents'][0][i],
+                        'metadata': results['metadatas'][0][i],
+                        'distance': results['distances'][0][i] if results['distances'] else 0,
+                        'score': 1 - (results['distances'][0][i] if results['distances'] else 0)
+                    })
+            
+            logger.info(f"🔍 搜索完成: 查询='{query}', 结果数={len(formatted_results)}")
+            return formatted_results
+            
+        except Exception as e:
+            logger.error(f"❌ 搜索失败: {e}")
+            return [] 
         
     def search_by_embedding(self, embedding: np.ndarray, n_results: int = 5) -> List[Dict]:
         """通过嵌入向量搜索"""

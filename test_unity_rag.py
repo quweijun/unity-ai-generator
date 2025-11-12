@@ -29,9 +29,10 @@ async def test_rag_system():
 
     # 测试问答
     test_questions = [
-        "这个游戏的主要目标是什么？",
-        "玩家点击气泡后会发生什么？",
-        "Unity中控制发射泡泡的脚本是哪个？"
+        "这个游戏代码有什么地方需要优化？"
+        # "这个游戏的主要目标是什么？",
+        # "玩家点击气泡后会发生什么？",
+        # "Unity中控制发射泡泡的脚本是哪个？"
     ]
 
     for i, q in enumerate(test_questions, 1):
@@ -42,11 +43,11 @@ async def test_rag_system():
             print(f"💬 回答: {answer}\n")
         except AttributeError:
             traceback.print_exc()
-            print("❌ 找不到 rag.query() 方法，请检查类定义。")
             methods = [m for m in dir(rag) if not m.startswith("_")]
             print(f"可用方法：{methods}")
             break
         except Exception as e:
+            traceback.print_exc()
             print(f"⚠️ 调用时出错: {e}")
             break
 

@@ -134,6 +134,21 @@ class ChromaVectorStore:
             ids = []
             
             for i, chunk in enumerate(chunks):
+                # 方法1：如果 chunk 是字典
+                if isinstance(chunk, dict):
+                    text = chunk.get('text', '') or chunk.get('content', '')
+                    metadata = chunk.get('metadata', {})
+                # 方法2：如果 chunk 有 text 属性
+                elif hasattr(chunk, 'text'):
+                    text = chunk.text
+                    metadata = getattr(chunk, 'metadata', {})
+                else:
+                    logger.warning(f"⚠️ 无法处理的 chunk 类型: {type(chunk)}")
+                    continue
+
+                if not text:
+                    logger.warning(f"⚠️ 跳过空文本的 chunk {i}")
+                    continue
                 documents.append(chunk.text)
                 
                 # 清理元数据，确保没有 None 值

@@ -61,6 +61,22 @@ class UnityRAGSystem:
         # 打印统计信息
         self._print_statistics(documents, chunks)
     
+    # 在 UnityRAGSystem 类中添加
+    async def reinitialize(self):
+        """重新初始化系统，清除所有缓存"""
+        # 清除现有状态
+        self.is_initialized = False
+        self.documents = []
+        self.chunks = []
+        
+        # 重新创建向量存储
+        if hasattr(self, 'vector_store') and self.vector_store:
+            self.vector_store = None
+        
+        # 重新初始化
+        await self.initialize()
+        print('🔄 RAG系统已重新初始化')
+    
     def _print_statistics(self, documents: List[Dict], chunks: List[Dict]):
         """打印统计信息"""
         file_types = {}

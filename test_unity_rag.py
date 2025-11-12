@@ -13,6 +13,7 @@ test_unity_rag.py
 
 import asyncio
 import nest_asyncio
+import traceback
 from app.services.unity_rag_system import UnityRAGSystem
 
 # 允许在 Jupyter / Colab 环境中重复使用事件循环
@@ -37,9 +38,10 @@ async def test_rag_system():
         print(f"\n🧠 测试问答 {i}: {q}")
         try:
             # 根据接口不同可改为 rag.ask(q) 或 rag.chat(q)
-            answer = await rag.query(q)
+            answer = await rag.ask_about_unity_project(q)
             print(f"💬 回答: {answer}\n")
         except AttributeError:
+            traceback.print_exc()
             print("❌ 找不到 rag.query() 方法，请检查类定义。")
             methods = [m for m in dir(rag) if not m.startswith("_")]
             print(f"可用方法：{methods}")

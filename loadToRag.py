@@ -15,5 +15,6 @@ try:
     nest_asyncio.apply()
     rag_system = asyncio.run(init_rag_system())
 except RuntimeError:
-    # 方法2：在已有事件循环中运行
-    rag_system = asyncio.get_event_loop().run_until_complete(init_rag_system())
+    print(f"start app fail")
+#     # 方法2：在已有事件循环中运行
+#     rag_system = asyncio.get_event_loop().run_until_complete(init_rag_system())

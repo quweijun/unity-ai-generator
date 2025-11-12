@@ -149,12 +149,15 @@ class ChromaVectorStore:
                 if not text:
                     logger.warning(f"⚠️ 跳过空文本的 chunk {i}")
                     continue
-                documents.append(chunk.text)
+
+                #documents.append(chunk.text)
+                documents.append(text)
                 
                 # 清理元数据，确保没有 None 值
                 cleaned_metadata = {}
-                if chunk.metadata:
-                    for key, value in chunk.metadata.items():
+                #if (not isinstance(chunk, dict)) and hasattr(chunk, 'metadata'):
+                if metadata:#chunk.metadata:
+                    for key, value in metadata.items():#chunk.metadata.items():
                         if value is not None:
                             # 根据值的类型进行适当转换
                             if isinstance(value, (str, int, float, bool)):
@@ -165,7 +168,7 @@ class ChromaVectorStore:
                         else:
                             # 对于 None 值，提供默认值或跳过
                             cleaned_metadata[key] = ""  # 或者跳过这个字段
-                
+                    
                 metadatas.append(cleaned_metadata)
                 ids.append(f"chunk_{i}")
             
@@ -184,6 +187,7 @@ class ChromaVectorStore:
         except Exception as e:
             logger.error(f"❌ 添加文档到向量数据库失败: {e}")
             raise
+
     def _clean_metadata(self, metadata: Dict) -> Dict:
         """清理metadata，确保只包含ChromaDB支持的数据类型"""
         cleaned = {}

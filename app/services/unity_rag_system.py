@@ -35,7 +35,7 @@ class UnityRAGSystem:
         self.processor = UnityTextProcessor()
         self.vector_store = ChromaVectorStore(persist_directory="./chroma_unity_db")
         self.is_initialized = False
-        self.llm_api_key = " "
+        self.llm_api_key = ""
     
     async def _call_llm(self, prompt: str) -> str:
         """
